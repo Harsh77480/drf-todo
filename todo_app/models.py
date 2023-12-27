@@ -2,33 +2,33 @@ from django.db import models
 from users.models import CustomUser
 
 
-class DocumentTest(models.Model) :
-    name = models.CharField(max_length=50)
-    file = models.FileField(upload_to='uploads/',blank=False, null=False)
+# class DocumentTest(models.Model) :
+#     name = models.CharField(max_length=50)
 
 
-# class Group(models.Model):
-#     name = models.CharField(max_length=200)
+class Group(models.Model):
+    name = models.CharField(max_length=200)
 #     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-#     # created at 
-#     def __str__(self):
-#         return self.name
+    created_at = models.DateField(auto_now_add=True)
+    def __str__(self):
+        return self.name
 
 
+class Todo(models.Model):
+    name = models.CharField(max_length=200)
+    description = models.TextField(blank=False)
+    due_date = models.DateField(blank=False)
+    completion_date  = models.DateField(blank=True,null=True)
+    isCompleted = models.BooleanField(default = False)
 
-# class Todo(models.Model):
-#     name = models.CharField(max_length=200)
-#     description = models.TextField(blank=False)
-#     assignee = models.ManyToManyField(CustomUser)
-#     group = models.ForeignKey(Group, on_delete=models.CASCADE)
-#     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-#     isCompleted = models.BooleanField(default = False)
-#     due_date = models.DateField(blank=False)
-#     completion_date  = models.DateField(blank=True)
-#     # attached_file = 
+    assignee = models.ManyToManyField(CustomUser,related_name='parents')
+    group = models.ForeignKey(Group, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     
-#     def __str__(self):
-#         return self.name
+    attached_file = models.FileField(upload_to='uploads/', null=True )
+    
+    def __str__(self):
+        return self.name 
 
 
 # class Comment(models.Model) :
