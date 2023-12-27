@@ -148,7 +148,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
 EMAIL_HOST_USER = "tech77480@gmail.com"
-EMAIL_HOST_PASSWORD = "rbvn owqg gnco ksjb"
+EMAIL_HOST_PASSWORD = "hitesh"
 
 from datetime import datetime, timedelta
 SIMPLE_JWT = {
