@@ -51,6 +51,8 @@ def get_tokens_for_user(user):
     return {
         'refresh': str(refresh),
         'access': str(refresh.access_token),
+        'id' : user.id ,
+        'name' : user.username
     }
 
 class Sign_In (APIView) :
@@ -59,7 +61,7 @@ class Sign_In (APIView) :
         email = request.data.get('email')
         password = request.data.get('password')
         user = authenticate(request,email=email,password=password)
-        print(email,password,user)
+        # print(email,password,user.id)
         if user :
             tokens = get_tokens_for_user(user)
             return Response(tokens, status=status.HTTP_200_OK)

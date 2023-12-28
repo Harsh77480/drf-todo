@@ -24,7 +24,7 @@ class TodoListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Todo
-        fields = ('name', 'attached_file','description','due_date','assignee','group','owner') 
+        fields = ('id','name','description','due_date','owner') 
 
     def get_custom_field(self, obj):
-        obj.assignee.values('username')
+        serializers = obj.assignee.values('username') 

@@ -49,7 +49,9 @@ class Todo(APIView) :
     def get(self,request,group_id) :
         serializer = TodoSerializer(models.Todo.objects.all(),many=True)
         x = models.Todo.objects.get(id=33)
-        print((x.assignee.values_list('username')))
+        data = x.assignee.values('username')
+        # data = [e['username'] for e in list(x.assignee.values('username')) ]
+        print(data)
         return JsonResponse(serializer.data,safe=False) 
     
 
