@@ -41,6 +41,7 @@ INSTALLED_APPS = [
      # Third-party apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'corsheaders',
 
     # Local apps
     'users',
@@ -57,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'todo.urls'
@@ -163,3 +165,8 @@ SIMPLE_JWT = {
     'USER_ID_CLAIM': 'user_id',
     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
 }
+
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  
+]

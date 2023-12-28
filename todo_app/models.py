@@ -14,7 +14,7 @@ class Group(models.Model):
         return self.name
 
 
-class Todo(models.Model):
+class Todo(models.Model): 
     name = models.CharField(max_length=200)
     description = models.TextField(blank=False)
     due_date = models.DateField(blank=False)
