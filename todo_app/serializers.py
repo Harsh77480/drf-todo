@@ -1,30 +1,37 @@
 
 from rest_framework import serializers
-from .models import Todo
+from .models import Todo,Group,Comment
+from users.models import CustomUser
+from users.serializers import UserSerializer
 
-# class UploadedFileSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DocumentTest
-#         fields = ('name', 'file')
 
-# class GroupSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = DocumentTest
-#         fields = ('name', 'file')
+
+class Assignee(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ('username','id')
+
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ('id','name', 'owner','created_at')
+
+
+class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('message','todo') 
 
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ('name', 'attached_file','description','due_date','assignee','group','owner') 
+        fields = ('name', 'attached_file','description','due_date','assignee','group') 
+
 
 class TodoListSerializer(serializers.ModelSerializer):
-
-    custom_field = serializers.SerializerMethodField()        
-
+    assignee = Assignee(many=True,partial=True)
     class Meta:
         model = Todo
-        fields = ('id','name','description','due_date','owner') 
+        fields = ('id','name','description','due_date','assignee' , 'isCompleted') 
 
-    def get_custom_field(self, obj):
-        serializers = obj.assignee.values('username') 
