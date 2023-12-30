@@ -9,6 +9,6 @@ urlpatterns = [
     path('groups/<int:group_id>/todos/<int:todo_id>/comments', views.TodoComments.as_view()),
     path('groups/<int:group_id>/todos/<int:todo_id>/completion', views.TodoCompletion.as_view()),
     path('download/<int:id>', views.get_file.as_view()),
-]
+]   
 
 

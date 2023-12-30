@@ -4,6 +4,7 @@ from users.models import CustomUser
 
 class Group(models.Model):
     name = models.CharField(max_length=200)
+    description = models.CharField(max_length=200,null=True)
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE,null=True)
     created_at = models.DateField(auto_now_add=True)
     def __str__(self):

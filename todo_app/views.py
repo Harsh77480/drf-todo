@@ -18,15 +18,9 @@ from datetime import date
 from rest_framework.pagination import PageNumberPagination
 
 
-class CustomPagination(pagination.PageNumberPagination):
-    page_size = 1  
-    page_size_query_param = 'page_size'
-    max_page_size = 100  
-
 class Groups(APIView) : 
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    pagination_class = CustomPagination
 
     def get(self,request) :
         user_groups = models.Group.objects.filter(id__in=request.user.parents.values('group').distinct())
