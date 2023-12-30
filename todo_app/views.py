@@ -43,6 +43,8 @@ class Groups(APIView) :
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST) 
         
+
+
 from rest_framework.parsers import JSONParser
 from users.serializers import UserSerializer
 class Todo(APIView) : 
@@ -56,7 +58,7 @@ class Todo(APIView) :
             data['group'] = group_id
             if 'attached_file' in request.data : 
                 data['attached_file'] = request.data['attached_file']
-            print(data)
+            # print(data)
 
             serializer = TodoSerializer(data=data)
             if serializer.is_valid():
@@ -78,7 +80,6 @@ class Todo(APIView) :
         name_query = request.query_params.get('name') #for searching 
         if name_query:
             todos = todos.filter(name__icontains=name_query)
-
 
         paginated_queryset = paginator.paginate_queryset(todos, request)
         
