@@ -9,12 +9,12 @@ from users.serializers import UserSerializer
 class Assignee(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ('username','id')
+        fields = ('username','id') 
 
 class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ('id','name', 'owner','created_at')
+        fields = ('id','name', 'description' , 'owner','created_at')
 
 
 class CommentSerializer(serializers.ModelSerializer):

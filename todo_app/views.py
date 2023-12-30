@@ -17,6 +17,8 @@ from . import serializers
 from datetime import date 
 from rest_framework.pagination import PageNumberPagination
 
+#postgres 
+#generics 
 
 class Groups(APIView) : 
     authentication_classes = [JWTAuthentication]
