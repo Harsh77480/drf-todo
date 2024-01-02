@@ -17,10 +17,12 @@ from . import serializers
 from datetime import date 
 from rest_framework.pagination import PageNumberPagination
 
+
 #postgres 
 #generics 
 
 class Groups(APIView) : 
+
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -43,6 +45,9 @@ class Groups(APIView) :
 
 from rest_framework.parsers import JSONParser
 from users.serializers import UserSerializer
+
+# class TodoDetails(APIView)
+
 class Todo(APIView) : 
 
     def post(self,request,group_id) :
@@ -69,6 +74,8 @@ class Todo(APIView) :
 
         paginator = PageNumberPagination()
         paginator.page_size = 10
+        group = get_object_or_404(models.Group,id=group_id)
+
 
         user = CustomUser.objects.get(id=request.user.id) 
         todos = user.parents.filter(group = group_id)
@@ -80,7 +87,7 @@ class Todo(APIView) :
         paginated_queryset = paginator.paginate_queryset(todos, request)
         
         data = serializers.TodoListSerializer(paginated_queryset,many=True) 
-        return paginator.get_paginated_response(data.data)
+        return paginator.get_paginated_response({"group" : group.name , "groupDesc" : group.description , "todos" : data.data })
         # return JsonResponse(data.data,safe=False) 
     
 
@@ -113,7 +120,14 @@ class TodoAssigne(APIView) :
         except Exception as error: 
             return JsonResponse({"Error" :str(error)},status = 500)
 
-class TodoCompletion(APIView) : 
+class TodoDetail(APIView) : 
+    def get(self,request,group_id,todo_id) : 
+        todo = get_object_or_404(models.Todo,id=todo_id)
+        user = todo.assignee.filter(id = request.user.id)
+        if len(user) < 1 : 
+                return JsonResponse({"Error" : "Unauthorized"},status=401)
+        return JsonResponse(serializers.TodoListSerializer(todo).data)
+    
     def post(self,request,group_id,todo_id) : 
         todo = get_object_or_404(models.Todo,id=todo_id)
         user = todo.assignee.filter(id = request.user.id)

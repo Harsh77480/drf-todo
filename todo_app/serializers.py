@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 from .models import Todo,Group,Comment
 from users.models import CustomUser
@@ -26,7 +25,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ('name', 'attached_file','description','due_date','assignee','group') 
+        fields = ( 'id' , 'name', 'attached_file','description','due_date','assignee','group') 
 
 
 class TodoListSerializer(serializers.ModelSerializer):

@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     path('sign_in', views.Sign_In.as_view()),
     path('sign_up', views.Sign_Up.as_view()),
+    path('list', views.UserList.as_view()),
     path('verify/<str:hash>', views.verify_email),
 ]

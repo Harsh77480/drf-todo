@@ -9,6 +9,7 @@ from django.db import transaction
 from django.contrib.auth.hashers import make_password
 from .models import EmailVerification,CustomUser
 from django.conf import settings
+from rest_framework import generics
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
@@ -45,6 +46,11 @@ class Sign_Up (APIView) :
         else :
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+# class ListUser(generics)
+class UserList(APIView):
+    def get(self,request) : 
+        users = UserSerializer( CustomUser.objects.all(), many=True ) 
+        return Response(users.data) 
 
 def get_tokens_for_user(user):
     refresh = RefreshToken.for_user(user)
