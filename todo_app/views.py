@@ -16,8 +16,8 @@ from users.models import CustomUser
 from . import serializers
 from datetime import date 
 from rest_framework.pagination import PageNumberPagination
-
-
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 #postgres 
 #generics 
 
@@ -33,6 +33,27 @@ class Groups(APIView) :
         return JsonResponse(groups.data,safe=False)
     
 
+
+    @swagger_auto_schema(
+            operation_summary="Add a group",
+            operation_description="Description of your API",
+            manual_parameters=[
+                openapi.Parameter(
+                    name='name',
+                    in_=openapi.IN_QUERY,
+                    type=openapi.TYPE_STRING,
+                    required=True,
+                ),
+                openapi.Parameter(
+                    name='description',
+                    in_=openapi.IN_QUERY,
+                    type=openapi.TYPE_STRING,
+                    required=True,
+                ),
+                # Add more parameters as needed
+            ],
+            responses={200: 'Success response'},
+        )
     def post(self, request ):
         request.data['owner'] = request.user.id
         serializer = serializers.GroupSerializer(data=request.data)
@@ -46,9 +67,8 @@ class Groups(APIView) :
 from rest_framework.parsers import JSONParser
 from users.serializers import UserSerializer
 
-# class TodoDetails(APIView)
+class Todo(APIView) :   
 
-class Todo(APIView) : 
 
     def post(self,request,group_id) :
 
@@ -70,10 +90,17 @@ class Todo(APIView) :
         except Exception as error : 
             return JsonResponse({"Error" : str(error)}, status=500)
 
+    @swagger_auto_schema(
+            operation_summary="Fetch todo list of logged in User",
+            operation_description="Response will have : name,description,",
+            responses={200: 'Success response'},
+            # Add more parameters, request body, etc.
+        )
+    
     def get(self,request,group_id) :
 
         paginator = PageNumberPagination()
-        paginator.page_size = 10
+        paginator.page_size = 5
         group = get_object_or_404(models.Group,id=group_id)
 
 
@@ -128,6 +155,8 @@ class TodoDetail(APIView) :
                 return JsonResponse({"Error" : "Unauthorized"},status=401)
         return JsonResponse(serializers.TodoListSerializer(todo).data)
     
+
+
     def post(self,request,group_id,todo_id) : 
         todo = get_object_or_404(models.Todo,id=todo_id)
         user = todo.assignee.filter(id = request.user.id)
@@ -173,6 +202,11 @@ class TodoComments(APIView) :
 
 
 class get_file(APIView):
+    @swagger_auto_schema(
+            operation_summary="Download the attached file given todo id",
+            operation_description="Only Assignees of todos can do get the file",
+            responses={200: 'Success response'},
+        )
 
     def get(self,request,id):
         uploaded_file = get_object_or_404(models.Todo, id=id)   
