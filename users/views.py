@@ -67,7 +67,6 @@ class Sign_In (APIView) :
         email = request.data.get('email')
         password = request.data.get('password')
         user = authenticate(request,email=email,password=password)
-        # print(email,password,user.id)
         if user :
             tokens = get_tokens_for_user(user)
             return Response(tokens, status=status.HTTP_200_OK)

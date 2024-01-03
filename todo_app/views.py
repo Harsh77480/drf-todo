@@ -18,11 +18,14 @@ from datetime import date
 from rest_framework.pagination import PageNumberPagination
 from drf_yasg.utils import swagger_auto_schema
 from drf_yasg import openapi
-#postgres 
-#generics 
+
+
+
+
 
 class Groups(APIView) : 
 
+    #permissions
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
 
@@ -32,8 +35,7 @@ class Groups(APIView) :
         groups = serializers.GroupSerializer(user_groups.union(user_owned_groups),many=True)
         return JsonResponse(groups.data,safe=False)
     
-
-
+    #Documentation
     @swagger_auto_schema(
             operation_summary="Add a group",
             operation_description="Description of your API",
@@ -50,7 +52,6 @@ class Groups(APIView) :
                     type=openapi.TYPE_STRING,
                     required=True,
                 ),
-                # Add more parameters as needed
             ],
             responses={200: 'Success response'},
         )
@@ -64,22 +65,17 @@ class Groups(APIView) :
         
 
 
-from rest_framework.parsers import JSONParser
-from users.serializers import UserSerializer
-
+#Todo operations 
+    
 class Todo(APIView) :   
-
-
     def post(self,request,group_id) :
-
         group = get_object_or_404(models.Group,id=group_id)
         try : 
             data = json.loads(request.data['jsonData'])
-            data['assignee'].append(request.user.id)
-            data['group'] = group_id
+            data['assignee'].append(request.user.id) #adding owner as one of the assignees of the todos 
+            data['group'] = group_id #setting group foreign key 
             if 'attached_file' in request.data : 
                 data['attached_file'] = request.data['attached_file']
-            # print(data)
 
             serializer = TodoSerializer(data=data)
             if serializer.is_valid():
@@ -90,6 +86,8 @@ class Todo(APIView) :
         except Exception as error : 
             return JsonResponse({"Error" : str(error)}, status=500)
 
+
+    #documentation
     @swagger_auto_schema(
             operation_summary="Fetch todo list of logged in User",
             operation_description="Response will have : name,description,",
@@ -99,14 +97,15 @@ class Todo(APIView) :
     
     def get(self,request,group_id) :
 
+        #pagination
         paginator = PageNumberPagination()
         paginator.page_size = 5
         group = get_object_or_404(models.Group,id=group_id)
 
-
         user = CustomUser.objects.get(id=request.user.id) 
         todos = user.parents.filter(group = group_id)
 
+        #searching
         name_query = request.query_params.get('name') #for searching 
         if name_query:
             todos = todos.filter(name__icontains=name_query)
@@ -115,7 +114,6 @@ class Todo(APIView) :
         
         data = serializers.TodoListSerializer(paginated_queryset,many=True) 
         return paginator.get_paginated_response({"group" : group.name , "groupDesc" : group.description , "todos" : data.data })
-        # return JsonResponse(data.data,safe=False) 
     
 
 class TodoAssigne(APIView) : 
@@ -151,25 +149,28 @@ class TodoDetail(APIView) :
     def get(self,request,group_id,todo_id) : 
         todo = get_object_or_404(models.Todo,id=todo_id)
         user = todo.assignee.filter(id = request.user.id)
+
+        #only assignees can see details
         if len(user) < 1 : 
                 return JsonResponse({"Error" : "Unauthorized"},status=401)
         return JsonResponse(serializers.TodoListSerializer(todo).data)
     
 
-
     def post(self,request,group_id,todo_id) : 
         todo = get_object_or_404(models.Todo,id=todo_id)
         user = todo.assignee.filter(id = request.user.id)
+        #only assignees can check todo 
         if len(user) < 1 : 
                 return JsonResponse({"Error" : "Unauthorized"},status=401)
         todo.isCompleted = not todo.isCompleted
         todo.save()
         return JsonResponse(serializers.TodoListSerializer(todo).data)
     
+
+#list overdue todos 
 class Overdue(APIView) : 
     def get(self,request,group_id) :   
         uncompleted_todos = models.Todo.objects.filter(group=group_id , due_date__lt=date.today() , isCompleted = False ) 
-        # print(uncompleted_todos)
         serializer = serializers.TodoListSerializer(uncompleted_todos,many=True)
         return JsonResponse(serializer.data,safe=False)
 
@@ -179,8 +180,10 @@ class TodoComments(APIView) :
     def get(self,request,group_id,todo_id) : 
         todo = get_object_or_404(models.Todo,id=todo_id)
         user = todo.assignee.filter(id = request.user.id)
+
+        #only assignees can see and post comments 
         if len(user) < 1 : 
-                return JsonResponse({"Error" : "You see comment "},status=401)
+                return JsonResponse({"Error" : "You cant see comment "},status=401)
         comments = serializers.CommentSerializer(todo.comment_set.all(),many=True)
         return JsonResponse(comments.data,safe=False)
     
@@ -201,6 +204,7 @@ class TodoComments(APIView) :
     
 
 
+#download attached file with todo 
 class get_file(APIView):
     @swagger_auto_schema(
             operation_summary="Download the attached file given todo id",
