@@ -25,12 +25,23 @@ class CommentSerializer(serializers.ModelSerializer):
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
-        fields = ( 'id' , 'name', 'attached_file','description','due_date','assignee','group') 
+        fields = ( 'id' , 'name', 'description','due_date', 'assignee', 'isCompleted' , 'attached_file','group') 
 
+ 
+class TodoAssigneeSerializer(serializers.ModelSerializer)  : 
+    class Meta :
+        model = Todo 
+        fields = ['assignee']
+
+class TodoCheckSerializer(serializers.ModelSerializer)  : 
+    class Meta :
+        model = Todo 
+        fields = ['isCompleted']
 
 class TodoListSerializer(serializers.ModelSerializer):
     assignee = Assignee(many=True,partial=True)
     class Meta:
         model = Todo
         fields = ('id','name','description','due_date','assignee' , 'isCompleted') 
+
 
